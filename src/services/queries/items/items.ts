@@ -12,7 +12,12 @@ export const getItem = async (id: string) => {
 };
 
 export const getItems = async (ids: string[]) => {
-    
+    const itemsCommands = ids.map((id)=> client.hGetAll(itemsKey(id)));
+    const results = await Promise.all(itemsCommands);
+    return results.map((item,i)=>{
+        if(Object.keys(item).length == 0) return null
+        return deserialize(ids[i], item)
+    })
 };
 
 export const createItem = async (attrs: CreateItemAttrs, userId: string) => {
